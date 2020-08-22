@@ -51,3 +51,8 @@ fun setPixelsColor(img: BufferedImage, pixelsCoords: List<IntArray>, color: Colo
     pixelsCoords.forEach { (y, x) -> img.setRGB(x, y, color.rgb) }
     return img
 }
+
+fun swapCoords(coords: List<IntArray>): List<IntArray> {
+    var temp: Int
+    return coords.map { c -> temp = c[0]; c[0] = c[1]; c[1] = temp; c }
+}

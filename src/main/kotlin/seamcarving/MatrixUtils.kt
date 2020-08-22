@@ -43,5 +43,20 @@ fun findCoordsOfShortestVerticalPath(matrix: List<List<Double>>): List<IntArray>
     return extractCoords(temp)
 }
 
+fun findCoordsOfShortestHorizontalPath(matrix: List<List<Double>>): List<IntArray> =
+    swapCoords(findCoordsOfShortestVerticalPath(transpose(matrix)))
+
 fun deapMax(matrix: List<List<Double>>): Double =
     matrix.flatMap { it.toList() }.max() ?: throw IllegalArgumentException("Matrix is empty")
+
+fun <T> transpose(matrix: List<List<T>>): List<List<T>> {
+    var col = -1
+    var row: Int
+    return List(matrix[0].size) {
+        col++
+        row = 0
+        List(matrix.size) {
+            matrix[row++][col]
+        }
+    }
+}

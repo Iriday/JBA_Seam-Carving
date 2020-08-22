@@ -6,6 +6,7 @@ fun main(args: Array<String>) {
     val inBufferedImg = readImage(args[args.indexOf("-in") + 1])
     val energy = computeEnergy(inBufferedImg)
     val normalizedEnergy = normalizeEnergy(energy, deapMax(energy))
-    val outImgWithVerticalSeam = setPixelsColor(inBufferedImg, findCoordsOfShortestVerticalPath(normalizedEnergy), Color.RED)
-    writeImage(outImgWithVerticalSeam, args[args.indexOf("-out") + 1])
+    setPixelsColor(inBufferedImg, findCoordsOfShortestVerticalPath(normalizedEnergy), Color.RED)
+    setPixelsColor(inBufferedImg, findCoordsOfShortestHorizontalPath(normalizedEnergy), Color.RED)
+    writeImage(inBufferedImg, args[args.indexOf("-out") + 1])
 }
