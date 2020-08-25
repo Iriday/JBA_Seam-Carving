@@ -65,3 +65,18 @@ fun getRGBsFromImg(img: BufferedImage): MutableList<MutableList<Int>> {
     var x: Int
     return MutableList(img.height) { y++; x = 0; MutableList(img.width) { img.getRGB(x++, y) } }
 }
+
+fun reduceImage(img: BufferedImage, width: Int): BufferedImage {
+    val rgbs = getRGBsFromImg(img)
+
+    for (i in 0 until width) {
+        val energy = computeEnergy(rgbs)
+        val normalizedEnergy = normalizeEnergy(energy, deapMax(energy))
+        val coords = findCoordsOfShortestVerticalPath(normalizedEnergy)
+        coords.forEach { (i, j) -> rgbs[i].removeAt(j) }
+    }
+
+    val newImg = BufferedImage(img.width - width, img.height, img.type)
+    newImg.setRGB(0, 0, newImg.width, newImg.height, rgbs.flatten().toIntArray(), 0, newImg.width)
+    return newImg
+}
