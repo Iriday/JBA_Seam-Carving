@@ -11,24 +11,27 @@ fun readImage(path: String): BufferedImage = ImageIO.read(File(path))
 
 fun writeImage(img: BufferedImage, path: String, format: String = "png") = ImageIO.write(img, format, File(path))
 
-fun computeEnergy(img: BufferedImage): List<MutableList<Double>> {
+fun computeEnergy(rgbs: List<List<Int>>): List<MutableList<Double>> {
+    val width = rgbs[0].size
+    val height = rgbs.size
+
     fun adjustCoord(coord: Int, len: Int): Int =
         when (coord) { 0 -> 1; len - 1 -> len - 2; else -> coord }
 
     fun calcGrad(a: Color, b: Color): Double =
         (a.red - b.red).toDouble().pow(2) + (a.green - b.green).toDouble().pow(2) + (a.blue - b.blue).toDouble().pow(2)
 
-    val energy = List(img.height) { MutableList(img.width) { 0.0 } }
+    val energy = List(height) { MutableList(width) { 0.0 } }
 
-    for (x in 0 until img.width) {
-        for (y in 0 until img.height) {
-            val x2 = adjustCoord(x, img.width)
-            val y2 = adjustCoord(y, img.height)
+    for (x in 0 until width) {
+        for (y in 0 until height) {
+            val x2 = adjustCoord(x, width)
+            val y2 = adjustCoord(y, height)
             // from current pixel
-            val left = Color(img.getRGB(x2 - 1, y))
-            val right = Color(img.getRGB(x2 + 1, y))
-            val top = Color(img.getRGB(x, y2 - 1))
-            val bottom = Color(img.getRGB(x, y2 + 1))
+            val left = Color(rgbs[y][x2 - 1])
+            val right = Color(rgbs[y][x2 + 1])
+            val top = Color(rgbs[y2 - 1][x])
+            val bottom = Color(rgbs[y2 + 1][x])
 
             energy[y][x] = sqrt(calcGrad(left, right) + calcGrad(top, bottom)) // x gradient + y gradient
         }
@@ -55,4 +58,10 @@ fun setPixelsColor(img: BufferedImage, pixelsCoords: List<IntArray>, color: Colo
 fun swapCoords(coords: List<IntArray>): List<IntArray> {
     var temp: Int
     return coords.map { c -> temp = c[0]; c[0] = c[1]; c[1] = temp; c }
+}
+
+fun getRGBsFromImg(img: BufferedImage): MutableList<MutableList<Int>> {
+    var y = -1
+    var x: Int
+    return MutableList(img.height) { y++; x = 0; MutableList(img.width) { img.getRGB(x++, y) } }
 }
